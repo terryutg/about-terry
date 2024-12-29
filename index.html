@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Terry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header, .footer {
+            background-color: #4caf50;
+            height: 50px;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .content {
+            flex: 1;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 1px solid #dddddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #333333;
+        }
+
+        p {
+            color: #555555;
+            line-height: 1.6;
+        }
+
+        /* Аватарка */
+        .avatar {
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .avatar img {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 3px solid #4caf50;
+            transition: transform 0.5s ease;
+        }
+
+        /* Стиль для кнопок */
+        .social-buttons {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 20px;
+        }
+
+        .social-button img {
+            width: 40px;
+            height: 40px;
+            transition: transform 0.3s;
+            border-radius: 50%;
+        }
+
+        .social-button img:hover {
+            transform: scale(1.2);
+        }
+
+        /* Стиль для модальных окон */
+        .modal {
+            display: none; /* Скрыто по умолчанию */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0); /* Без затемнения по умолчанию */
+            transition: background-color 0.5s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 400px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -100%); /* Начальное состояние - сверху */
+            opacity: 0; /* Начальная прозрачность */
+            transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+        }
+
+        .modal.active .modal-content {
+            transform: translate(-50%, -50%); /* Меню будет выпадать и останавливаться в центре */
+            opacity: 1; /* Сделаем меню видимым */
+        }
+
+        .modal.active {
+            background-color: rgba(0, 0, 0, 0.7); /* Плавное затемнение фона */
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Кнопка для открытия меню */
+        .social-buttons .social-button {
+            cursor: pointer;
+        }
+
+        /* Стиль для новой кнопки */
+        .modal-button {
+            background-color: #5165f6;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+            width: 100%;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .modal-button:hover {
+            background-color: #4150d6;
+        }
+
+        /* Кастомное уведомление */
+        .custom-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4caf50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 1s ease-in-out; /* Плавное исчезновение */
+        }
+
+        .custom-notification.show {
+            display: block;
+        }
+
+        /* Стили для QR-кода */
+        #qrCodeContainer {
+            background-color: white; /* Белый фон для контейнера */
+            padding: 10px; /* Добавляем отступ для красоты */
+            display: none;
+            margin-top: 20px;
+        }
+
+        #qrCodeContainer img {
+            width: 100%;
+            max-width: 200px; /* Устанавливаем максимальную ширину изображения */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Welcome to My Website</div>
+
+    <div class="content">
+        <h1>About Me</h1>
+        <p>Hi, I'm Terry. Welcome to my personal website where you can learn more about me!</p>
+        
+        <h2>Contact</h2>
+
+        <!-- Кнопки Discord и Telegram -->
+        <div class="social-buttons">
+            <a href="#" class="social-button" onclick="openModal('discordModal')">
+                <img src="https://cdn.discordapp.com/attachments/1253332984350769202/1322909602991571037/Discord-Emblem_1.png?ex=67729713&is=67714593&hm=f7c3a9b51c4389e5254742ae166a1254c9f3ca8d4eb010c9c901213ecfbc965f" alt="Discord">
+            </a>
+            <a href="#" class="social-button" onclick="openModal('telegramModal')">
+                <img src="https://cdn.discordapp.com/attachments/1253332984350769202/1322907538081054823/Telegram_2019_Logo.svg.png?ex=67729527&is=677143a7&hm=34fa844c4b87f53f881fc183bc42d1f6715e50b29cd073165b90516e4ccc1671&" alt="Telegram">
+            </a>
+        </div>
+
+        <!-- Аватарка -->
+        <div class="avatar" onclick="rotateAvatar()">
+            <img src="https://cdn.discordapp.com/attachments/1252964706294173796/1322901974366294056/Fotoram.io_3.png?ex=67728ff9&is=67713e79&hm=05e62aa2f119605a5f489d56df399953bcdfe221bde3276de94004df1bc01363&" 
+                 alt="Terry's Avatar" id="terry-avatar">
+        </div>
+    </div>
+
+    <div class="footer">© 2024 Terry LLC. All rights reserved.</div>
+
+    <!-- Модальное окно для Discord -->
+    <div id="discordModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('discordModal')">&times;</span>
+            <h2>Discord</h2>
+            <p>Here are some ways to contact me on Discord</p>
+
+            <!-- Кнопки -->
+            <div class="social-buttons">
+                <button class="modal-button" onclick="window.open('https://discordapp.com/users/1252960478766960704/', '_blank')">
+                    My Profile Link
+                </button>
+                <button class="modal-button" onclick="copyUsername('discord')">
+                    Copy Username
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для Telegram -->
+    <div id="telegramModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('telegramModal')">&times;</span>
+            <h2>Telegram</h2>
+            <p>Here you can add your Telegram-related buttons or links.</p>
+
+            <!-- Кнопки -->
+            <div class="social-buttons">
+                <button class="modal-button" onclick="copyUsername('telegram')">
+                    Copy Username
+                </button>
+                <button id="qrCodeToggleButton" class="modal-button" onclick="toggleQRCode()">
+                    Show QR Code
+                </button>
+            </div>
+
+            <div id="qrCodeContainer">
+                <img src="https://cdn.discordapp.com/attachments/1252964706294173796/1322938065324343417/image.png?ex=6772b195&is=67716015&hm=298bc03271113196f843c187374feef4cf633859d373275fed954a82741d0c2d&" alt="QR Code">
+            </div>
+        </div>
+    </div>
+
+    <!-- Кастомное уведомление -->
+    <div id="customNotification" class="custom-notification">Nickname Copied!</div>
+
+    <script>
+        // Открытие модального окна
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = "block";
+            setTimeout(() => {
+                modal.classList.add("active");
+            }, 10);
+        }
+
+        // Закрытие модального окна
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove("active");
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 500);
+        }
+
+        // Функция копирования никнейма
+        function copyUsername(platform) {
+            let username = '';
+            if (platform === 'discord') {
+                username = 'terryutg'; // Discord username
+            } else if (platform === 'telegram') {
+                username = 'TerryUTG'; // Telegram username
+            }
+
+            navigator.clipboard.writeText(username).then(() => {
+                showNotification();
+            });
+        }
+
+        // Показ уведомления
+        function showNotification() {
+            const notification = document.getElementById("customNotification");
+            notification.classList.add("show");
+            setTimeout(() => {
+                notification.classList.remove("show");
+            }, 2000);
+        }
+
+        // Вращение аватарки
+        let rotationDegree = 0;
+        function rotateAvatar() {
+            rotationDegree += 180;
+            document.getElementById("terry-avatar").style.transform = `rotate(${rotationDegree}deg)`;
+        }
+
+        // Показ/Скрытие QR кода
+        function toggleQRCode() {
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            const qrCodeToggleButton = document.getElementById('qrCodeToggleButton');
+            
+            if (qrCodeContainer.style.display === 'block') {
+                qrCodeContainer.style.display = 'none';
+                qrCodeToggleButton.textContent = 'Show QR Code';
+            } else {
+                qrCodeContainer.style.display = 'block';
+                qrCodeToggleButton.textContent = 'Hide QR Code';
+            }
+        }
+    </script>
+</body>
+</html>
